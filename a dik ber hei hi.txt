@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CLICK EARN</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="//jagnaimsee.net/vignette.min.js" data-zone="9486297" data-sdk="show_9486297"></script>
+  <script src="//jagnaimsee.net/vignette.min.js" data-zone="9486477" data-sdk="show_9486477"></script>
+  <script src="//jagnaimsee.net/vignette.min.js" data-zone="9486486" data-sdk="show_9486486"></script>
+  <style>
+  body {
+    background: #000;
+    color: #fff;
+    font-family: sans-serif;
+    margin: 0;
+    padding-bottom: 60px;
+  }
+  .header {
+    text-align: center;
+    padding: 20px;
+  }
+  .header img {
+    width: 120px;
+    border-radius: 15px;
+  }
+  .developer {
+    color: #999;
+    font-size: 14px;
+    margin-top: 5px;
+    cursor: pointer;
+  }
+  .user-info {
+    text-align: center;
+    padding: 15px;
+  }
+  .user-info-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  #user-photo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid #FFD700;
+    display: none;
+  }
+  #user-name {
+    font-size: 17px;
+    font-weight: bold;
+    color: #FFD700;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 15px;
+  }
+  .stat-card {
+    flex: 1;
+    background: #111;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(255,255,255,0.05);
+  }
+  .stat-card h3 {
+    font-size: 14px;
+    margin: 0;
+    color: #FFD700;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px;
+  }
+  .progress-bar {
+    background: #333;
+    border-radius: 10px;
+    height: 10px;
+    overflow: hidden;
+    margin: 0 15px;
+  }
+  .progress-fill {
+    background: #FFD700;
+    width: 0%;
+    height: 100%;
+  }
+
+  /* GALAXY SPARKLE BUTTON */
+  .sparkle-btn {
+    background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1f 100%);
+    color: #FFD700;
+    padding: 14px;
+    width: 100%;
+    margin: 10px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.1), 0 0 24px rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .sparkle-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.2);
+  }
+  .sparkle-btn::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+    background-size: 30px 30px;
+    animation: sparkleMove 12s linear infinite;
+    opacity: 0.2;
+    z-index: 1;
+  }
+  @keyframes sparkleMove {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(50%, 50%) rotate(360deg); }
+  }
+  .sparkle-btn span {
+    position: relative;
+    z-index: 2;
+  }
+
+  #claim-bonus-btn.pulse-anim {
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  .ad-notification {
+    display: none;
+    text-align: center;
+    background: #FFD700;
+    color: #000;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    font-weight: bold;
+  }
+  .withdraw-form {
+    padding: 20px;
+  }
+  iframe {
+    width: 100%;
+    height: 700px;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #333;
+    padding: 10px 0;
+    z-index: 999;
+  }
+  .bottom-nav div {
+    text-align: center;
+    color: white;
+    flex: 1;
+  }
+  .bottom-nav svg {
+    fill: white;
+  }
+  </style>
+</head>
+<body>
+<div class="ad-notification" id="ad-notification">Ad completed! +0.50 points added</div>
+<audio id="bonus-sound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=" preload="auto"></audio>
+
+<div class="container">
+  <div class="header">
+    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTkNdssPLeo99T1qy-TKD0L2zvFsvFyiUrZz5TEbcaU3mrMYGBWtC7a9hivpXsEgoIyoc1Sa6fQGNr25L1b-O6YbTVZKF9s8UBcykq_N7N-Gw0vUW8uCQH4c9IkAQ9VQL4SoLL1EajSKxppgBIHIV2OCxz_5Bu_TNUGDbrM45o4hd0Ju9N8DXKyZ5Egks/s3312/1000093548.png" alt="CLICK EARN"/>
+    <div class="developer" onclick="window.location.href='https://t.me/TLUANGA9'">Developer by TLUANGTEA</div>
+  </div>
+
+  <div class="content" id="main-content">
+    <div class="user-info">
+      <div class="user-info-flex">
+        <img id="user-photo" src="" alt="Profile">
+        <span id="user-name">Loading...</span>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <h3>Watched Ads</h3>
+        <div class="value" id="watched-ads">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Earned Points</h3>
+        <div class="value" id="earned-points">0.00</div>
+        <div id="ton-value" style="font-size:13px;color:#FFD700;margin-top:5px;">≈ 0.0000 TON</div>
+      </div>
+    </div>
+
+    <div class="progress-label">
+      <span>Progress to Bonus</span>
+      <span id="ads-progress">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="ad-container">
+      <div class="ad-container">
+  <button class="sparkle-btn" id="ad1-btn" onclick="watchAd('ad1', show_9486297, 90)">
+    <span>🎥 Watch Ad 1 (0/90)</span>
+  </button>
+  <button class="sparkle-btn" id="ad2-btn" onclick="watchAd('ad2', show_9486477, 70)">
+    <span>🎥 Watch Ad 2 (0/70)</span>
+  </button>
+  <button class="sparkle-btn" id="ad3-btn" onclick="watchAd('ad3', show_9486486, 60)">
+    <span>🎥 Watch Ad 3 (0/60)</span>
+  </button>
+  <button class="sparkle-btn" id="claim-bonus-btn" style="display:none;" onclick="claimBonus()">
+    <span>🎁 Claim Bonus +1.00</span>
+  </button>
+      </div>
+  </div>
+
+  <div class="content withdraw-form" id="withdraw-content" style="display:none;">
+    <h3 style="text-align:center;color:#FFD700;margin-bottom:10px;">Withdraw Request Form</h3>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfPjPDhfRQMigg5EhhJvt8MLccgMoWSAgM1MMJq2VXRCTPLMg/viewform?embedded=true">Loading…</iframe>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div onclick="goHome()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <div style="font-size:14px;">Home</div>
+  </div>
+  <div onclick="goWithdraw()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M12 17q-.425 0-.713-.288Q11 16.425 11 16v-3.15l-.9.9q-.3.3-.712.3t-.713-.3q-.3-.3-.3-.712t.3-.713l2.6-2.6q.15-.15.325-.212.175-.063.375-.063t.375.063q.175.062.325.212l2.6 2.6q.3.3.3.713t-.3.712q-.3.3-.713.3t-.712-.3l-.9-.9V16q0 .425-.288.712Q12.425 17 12 17Z"/></svg>
+    <div style="font-size:14px;">Withdraw</div>
+  </div>
+</div>
+
+<script>
+  const POINTS_PER_AD = 0.5;
+  const POINT_TO_TON = 0.0001;
+  const LAST_RESET_KEY = "lastAdReset";
+
+  const ads = {
+    ad1: { count: 0, limit: 90, key: 'ad1Count', btn: 'ad1-btn' },
+    ad2: { count: 0, limit: 70, key: 'ad2Count', btn: 'ad2-btn' },
+    ad3: { count: 0, limit: 60, key: 'ad3Count', btn: 'ad3-btn' }
+  };
+
+  let earnedPoints = parseFloat(localStorage.getItem("earnedPoints") || "0");
+
+  function checkDailyReset() {
+    const today = new Date().toDateString();
+    const lastReset = localStorage.getItem(LAST_RESET_KEY);
+    if (lastReset !== today) {
+      for (let ad in ads) {
+        ads[ad].count = 0;
+        localStorage.setItem(ads[ad].key, "0");
+      }
+      localStorage.setItem("earnedPoints", "0");
+      localStorage.setItem("bonusClaimedAt", "0");
+      earnedPoints = 0;
+      localStorage.setItem(LAST_RESET_KEY, today);
+    } else {
+      for (let ad in ads) {
+        ads[ad].count = parseInt(localStorage.getItem(ads[ad].key)) || 0;
+      }
+    }
+  }
+
+  function updateUI() {
+    let totalWatched = 0;
+    for (let ad in ads) {
+      const { count, btn } = ads[ad];
+      document.getElementById(btn).textContent = `🎥 Watch Ad ${ad.slice(-1)} (${count}/${ads[ad].limit})`;
+      totalWatched += count;
+    }
+    document.getElementById("watched-ads").textContent = totalWatched;
+    document.getElementById("earned-points").textContent = earnedPoints.toFixed(2);
+    document.getElementById("ton-value").textContent = `≈ ${(earnedPoints * POINT_TO_TON).toFixed(4)} TON`;
+
+    const progress = (totalWatched % 10) / 10 * 100;
+    document.getElementById("ads-progress").textContent = `${Math.round(progress)}%`;
+    document.getElementById("progress-fill").style.width = `${progress}%`;
+
+    const bonusClaimedAt = parseInt(localStorage.getItem("bonusClaimedAt") || "0");
+    const claimBtn = document.getElementById("claim-bonus-btn");
+    if (totalWatched - bonusClaimedAt >= 10) {
+      claimBtn.style.display = "block";
+      claimBtn.classList.add("pulse-anim");
+    } else {
+      claimBtn.style.display = "none";
+      claimBtn.classList.remove("pulse-anim");
+    }
+  }
+
+  function watchAd(adKey, showFunc) {
+    const ad = ads[adKey];
+    const btn = document.getElementById(ad.btn);
+    if (btn.disabled || ad.count >= ad.limit) {
+      showAdNotification(`Limit reached for Ad ${adKey.slice(-1)}!`);
+      return;
+    }
+    btn.disabled = true;
+    let sec = 8;
+    const interval = setInterval(() => {
+      btn.textContent = `⏳ Wait ${sec--}s...`;
+      if (sec < 0) {
+        clearInterval(interval);
+        btn.disabled = false;
+        updateUI();
+      }
+    }, 1000);
+    showAdNotification("Loading ad...");
+    (typeof showFunc === "function" ? showFunc() : Promise.reject())
+      .then(() => afterAd(adKey))
+      .catch(() => fallbackAd(adKey));
+  }
+
+  function afterAd(adKey) {
+    ads[adKey].count++;
+    earnedPoints += POINTS_PER_AD;
+    localStorage.setItem(ads[adKey].key, ads[adKey].count);
+    localStorage.setItem("earnedPoints", earnedPoints);
+    updateUI();
+    showAdNotification("+0.50 points added!");
+  }
+
+  function fallbackAd(adKey) {
+    setTimeout(() => afterAd(adKey), 2000);
+  }
+
+  function claimBonus() {
+    let totalWatched = Object.values(ads).reduce((sum, ad) => sum + ad.count, 0);
+    const lastClaim = parseInt(localStorage.getItem("bonusClaimedAt") || "0");
+    if (totalWatched - lastClaim >= 10) {
+      earnedPoints += 1;
+      localStorage.setItem("earnedPoints", earnedPoints);
+      localStorage.setItem("bonusClaimedAt", totalWatched);
+      updateUI();
+      document.getElementById("bonus-sound").play();
+      showAdNotification("Your bonus 1 point is claim successful 🎉");
+    }
+  }
+
+  function showAdNotification(msg) {
+    const el = document.getElementById("ad-notification");
+    el.textContent = msg;
+    el.style.display = "block";
+    setTimeout(() => (el.style.display = "none"), 3000);
+  }
+
+  function goHome() {
+    document.getElementById("main-content").style.display = "block";
+    document.getElementById("withdraw-content").style.display = "none";
+  }
+
+  function goWithdraw() {
+    document.getElementById("main-content").style.display = "none";
+    document.getElementById("withdraw-content").style.display = "block";
+  }
+
+  window.onload = () => {
+    checkDailyReset();
+    const userData = Telegram.WebApp?.initDataUnsafe?.user;
+
+    if (userData) {
+      document.getElementById("user-name").textContent = userData.username || "Unknown User";
+      if (userData.photo_url) {
+        const photoEl = document.getElementById("user-photo");
+        photoEl.src = userData.photo_url;
+        photoEl.style.display = "block";
+      }
+    } else {
+      document.getElementById("user-name").textContent = "Guest";
+    }
+
+    updateUI();
+  };
+</script>
+</body>
+</html>
